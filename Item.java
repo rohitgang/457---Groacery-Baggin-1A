@@ -15,7 +15,7 @@ public class Item{
      * constructor for the item class.
      * initializes variables name and weight and the constrainstsMap
      */
-    public Item(itemName, itemWeight){
+    public Item(String itemName,int itemWeight){
         name= itemName;
         weight= itemWeight;
         constrainstsMap= new HashMap<Item, boolean> ();
