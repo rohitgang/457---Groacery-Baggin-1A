@@ -1,14 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/* - 
-- int currentWeight
-- HashMap<Item, Boolean>
-- canAdd(Item)
-{Returns boolean}
-- addItemToBag()
-*/
-
 public class Bag {
 	
 	private int maxSize;
