@@ -3,8 +3,10 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-
-
+/**
+* Driver class that drives?
+* @author rohit gangurde, steven kim, colin beckley
+ */
 public class Driver {
 
 	private ArrayList<Item> Items;
@@ -23,7 +25,7 @@ public class Driver {
 			
 			
 			
-		}catch(FileNotFoundException e)
+		} catch(FileNotFoundException e)
 		{
 			
 		}
