@@ -34,8 +34,8 @@ public class State{
     			break;
     		}
     		ArrayList<Bag> duplicateBags = new ArrayList<Bag>();
-    		for (Bag bag : totalBags) {
-    			Bag newBag = bag.copyBag();
+    		for (int j = 0; j < totalBags.size(); j++) {
+    			Bag newBag = totalBags.get(i).copyBag();
     			duplicateBags.add(newBag);
     		}
     		Bag currentBag = duplicateBags.get(i);

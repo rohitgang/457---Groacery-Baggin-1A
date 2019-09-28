@@ -35,9 +35,11 @@ public class Bag {
 		for (String key : map.keySet()) {
 			dupeMap.put(key, map.get(key));
 		}
-		bagConstraints = dupeMap;
+		this.bagConstraints = dupeMap;
 		ArrayList<Item> dupeItemsInBag = new ArrayList<Item>();
-		dupeItemsInBag.addAll(itemsInBag);
+		for (Item item : itemsInBag) {
+			dupeItemsInBag.add(item.copyItem());
+		}
 		this.itemsInBag = dupeItemsInBag;
 	}
 	
@@ -70,8 +72,9 @@ public class Bag {
 	private boolean canAdd(Item it)
 	{
 		boolean canAdd = true;
-		if (!full())
+		if (!full() && (it.getWeight() + currentWeight <= maxSize))
 		{
+			if (it.getWeight() + currentWeight <= maxSize)
 			//check constraints of item being added against items currently in the bag
 			for (Item item : itemsInBag) {
 				canAdd &= it.getConstraints().get(item.getName());

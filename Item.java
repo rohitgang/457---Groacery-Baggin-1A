@@ -20,7 +20,17 @@ public class Item{
         weight= itemWeight;
     }
     
-    /**
+    public Item(int weight, String name, HashMap<String, Boolean> constraintsMap) {
+		this.weight = weight;
+		this.name = name;
+		HashMap<String, Boolean> dupeConstraintsMap = new HashMap<String, Boolean>();
+		for (String key : constraintsMap.keySet()) {
+			dupeConstraintsMap.put(key, constraintsMap.get(key));
+		}
+		this.constraintsMap = dupeConstraintsMap;
+	}
+
+	/**
      * sets the constraints for the item.
      * @param constraint: HashMap of item constraints
      */
@@ -53,5 +63,9 @@ public class Item{
     HashMap<String, Boolean> getConstraints(){
     	return constraintsMap;
     }
+
+	public Item copyItem() {
+		return new Item(weight, name, constraintsMap);
+	}
     
 }
