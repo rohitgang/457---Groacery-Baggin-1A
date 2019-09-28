@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Bags hold Items
@@ -10,18 +11,34 @@ public class Bag {
 	
 	private int maxSize;
 	private int currentWeight;
-	private HashMap<Item, Boolean> bagConstraints;
+	private HashMap<String, Boolean> bagConstraints;
 	private ArrayList<Item> itemsInBag;
 	
 	/**
 	 * Create a Bag item with a max weight
 	 * @param max - the maximum weight the bag can hold
 	 */
-	public Bag (int max) {
+	public Bag (int max, ArrayList<String> itemNames) {
 		maxSize = max;
 		currentWeight = 0;
-		bagConstraints = new HashMap<Item, Boolean>();
+		bagConstraints = new HashMap<String, Boolean>();
 		itemsInBag = new ArrayList<Item>();
+		for (String item : itemNames) {
+			bagConstraints.put(item, true);
+		}
+	}
+	
+	public Bag (int max, int currentWeight, HashMap<String, Boolean> map, ArrayList<Item> itemsInBag) {
+		maxSize = max;
+		this.currentWeight = currentWeight;
+		HashMap<String, Boolean> dupeMap = new HashMap<String, Boolean>();
+		for (String key : map.keySet()) {
+			dupeMap.put(key, map.get(key));
+		}
+		bagConstraints = dupeMap;
+		ArrayList<Item> dupeItemsInBag = new ArrayList<Item>();
+		dupeItemsInBag.addAll(itemsInBag);
+		this.itemsInBag = dupeItemsInBag;
 	}
 	
 	/**
@@ -38,8 +55,8 @@ public class Bag {
 			currentWeight += it.getWeight();
 			itemsInBag.add(it);
 			for(Item item : allItems) {
-				bagConstraints.put(item, 
-						it.getConstraints().get(item) && bagConstraints.get(item));
+				bagConstraints.put(item.getName(), 
+						it.getConstraints().get(item.getName()) && bagConstraints.get(item.getName()));
 			}
 		}
 		return added;
@@ -57,10 +74,10 @@ public class Bag {
 		{
 			//check constraints of item being added against items currently in the bag
 			for (Item item : itemsInBag) {
-				canAdd &= it.getConstraints().get(item);
+				canAdd &= it.getConstraints().get(item.getName());
 			}
 			//check constraints of the bag against the item attempting to be added
-			canAdd &= bagConstraints.get(it);
+			canAdd &= bagConstraints.get(it.getName());
 		}
 		else {
 			canAdd = false;
@@ -83,5 +100,17 @@ public class Bag {
 	 */
 	public int getCurrentWeight() {
 		return currentWeight;
+	}
+	
+	public String getItemsInBag() {
+		String ret = "";
+		for (Item item : itemsInBag) {
+			ret = ret.concat(item.getName() + " ");
+		}
+		return ret;
+	}
+
+	public Bag copyBag() {
+		return new Bag(maxSize, currentWeight, bagConstraints, itemsInBag);
 	}
 }

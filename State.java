@@ -34,7 +34,10 @@ public class State{
     			break;
     		}
     		ArrayList<Bag> duplicateBags = new ArrayList<Bag>();
-        	duplicateBags.addAll(totalBags);
+    		for (Bag bag : totalBags) {
+    			Bag newBag = bag.copyBag();
+    			duplicateBags.add(newBag);
+    		}
     		Bag currentBag = duplicateBags.get(i);
     		if (currentBag.getCurrentWeight() == 0) {
     			addedToEmpty = true;
@@ -53,5 +56,9 @@ public class State{
      */
     boolean isComplete(){
         return itemsNotAdded.isEmpty();
+    }
+    
+    public ArrayList<Bag> getBags() {
+    	return totalBags;
     }
 }

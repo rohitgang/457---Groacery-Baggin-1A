@@ -9,7 +9,7 @@ public class Item{
 
     private int weight;
     private String name;
-    private HashMap<Item, Boolean> constraintsMap;
+    private HashMap<String, Boolean> constraintsMap;
 
     /**
      * constructor for the item class.
@@ -24,7 +24,7 @@ public class Item{
      * sets the constraints for the item.
      * @param constraint: HashMap of item constraints
      */
-    public void setConstraints(HashMap<Item, Boolean> constraint)
+    public void setConstraints(HashMap<String, Boolean> constraint)
     {
     	constraintsMap= constraint;
     }
@@ -50,7 +50,7 @@ public class Item{
      * returns HashMap for the constraints of items
      * @return constraintsMap
      */
-    HashMap<Item, Boolean> getConstraints(){
+    HashMap<String, Boolean> getConstraints(){
     	return constraintsMap;
     }
     
