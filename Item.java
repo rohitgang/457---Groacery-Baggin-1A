@@ -20,7 +20,7 @@ public class Item{
         weight= itemWeight;
     }
     
-    public Item(int weight, String name, HashMap<String, Boolean> constraintsMap) {
+    private Item(int weight, String name, HashMap<String, Boolean> constraintsMap) {
 		this.weight = weight;
 		this.name = name;
 		HashMap<String, Boolean> dupeConstraintsMap = new HashMap<String, Boolean>();

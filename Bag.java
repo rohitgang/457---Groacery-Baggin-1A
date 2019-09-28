@@ -74,7 +74,6 @@ public class Bag {
 		boolean canAdd = true;
 		if (!full() && (it.getWeight() + currentWeight <= maxSize))
 		{
-			if (it.getWeight() + currentWeight <= maxSize)
 			//check constraints of item being added against items currently in the bag
 			for (Item item : itemsInBag) {
 				canAdd &= it.getConstraints().get(item.getName());

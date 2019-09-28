@@ -10,7 +10,10 @@ import java.util.LinkedList;
 
 
 /**
-* Driver class that drives?
+* Driver class that takes in the command line arguments and parses the file for
+* the bag data and item data. It creates the bag, item and state objects. 
+* It implements breadth first or depth first search appropriately.
+* Terminates on error.
 * @author rohit gangurde, steven kim, colin beckley
  */
 public class Driver {
@@ -24,38 +27,38 @@ public class Driver {
 	 * @param 
 	 */
 	public static void main(String[] args) {
-		String fileName = args[0];
-		String choice= args[1];
 		try {
+			String fileName = args[0];
+			String choice= args[1];
 			File file = new File(fileName);
 			Scanner scan = new Scanner(file);
 			initBagsAndItems(scan);
 			scan = new Scanner(file);
 			createItemConstraints(scan);
 			successStates = new LinkedList<State>();
+			ArrayList<Item> dupeItems = new ArrayList<Item>();
+			for (Item item : Items) {
+				dupeItems.add(item.copyItem());
+			}
 			if (choice.equals("-depth")) {
 				Stack<State> States= new Stack <State>();
-				States.add(new State(Bags, Items, Items));
+				States.add(new State(Bags, Items, dupeItems));
+				depthSearch(States);
 			}
 			else if(choice.equals("-breadth")) {
 				LinkedList<State> States= new LinkedList <State>();
-				ArrayList<Item> dupeItems = new ArrayList<Item>();
-				for (Item item : Items) {
-					dupeItems.add(item.copyItem());
-				}
 				States.add(new State(Bags, Items, dupeItems));
 				breadthSearch(States);
-				printSuccessStates();
 			}
 			else {
-				System.out.println("Usage, change later");
+				System.out.println("Usage, java Driver <filename> [-depth |-breadth]");
 				System.exit(0);
 			}
+			printSuccessStates();
 		} catch(Exception e)
 		{
 			System.out.println(e);
-			e.printStackTrace();
-			System.out.println("Your file is invalid");
+			System.out.println("Your file is invalid, check the number format or the file location.");
 			System.exit(0);
 		}
 		
@@ -78,11 +81,6 @@ public class Driver {
 	private static LinkedList<State> breadthSearch(LinkedList<State> nextStates) {
 		while (!nextStates.isEmpty()) {
 			State nextState = nextStates.remove();
-			for (Bag bag : nextState.getBags()) {
-				System.out.print("Bag :");
-				System.out.print(bag.getItemsInBag() + "\n");
-			}
-			System.out.println("Added");
 			if (nextState.isComplete()) {
 				successStates.add(nextState);
 			} else {
@@ -91,7 +89,19 @@ public class Driver {
 		}
 		return successStates.isEmpty() ? null : successStates;
 	}
-
+	
+	private static LinkedList<State> depthSearch(Stack<State> nextStates) {
+		while (!nextStates.isEmpty() && successStates.isEmpty()) {
+			State nextState = nextStates.pop();
+			if (nextState.isComplete()) {
+				successStates.add(nextState);
+			} else {
+				nextStates.addAll(nextState.nextPossibleStates());
+			}
+		}
+		return successStates.isEmpty() ? null : successStates;
+	}
+	
 	/** Method that initializes ArrayList Bags and Items
 	 * @param scan is a Scanner that reads the file.
 	 */
@@ -136,22 +146,12 @@ public class Driver {
 			else {
 				if (line[2].equals("+")) {
 					for (String item: itemNames) {
-						if (contains(item, line)) {
-							mapp.put(item, true);
-						}
-						else {
-							mapp.put(item,false);
-						}
+						mapp.put(item, contains(item, line));
 					}
 				}
 				else if (line[2].equals("-")) {
 					for (String item: itemNames) {
-						if(contains(item, line) && !(item.equals(line[0]))) {
-							mapp.put(item, false);
-						}
-						else {
-							mapp.put(item, true);
-						}
+						mapp.put(item, contains(item, line) && !(item.equals(line[0])));
 					}
 				}
 				else {

@@ -17,7 +17,11 @@ public class State{
      */
     public State(ArrayList<Bag> bags, ArrayList<Item> items, ArrayList<Item> allItems){
         totalBags= bags;
-        itemsNotAdded= items;
+        ArrayList<Item> notAdded = new ArrayList<Item>();
+        for (Item item : items) {
+        	notAdded.add(item.copyItem());
+        }
+        itemsNotAdded= notAdded;
         this.allItems = allItems;
     }
 
@@ -35,7 +39,7 @@ public class State{
     		}
     		ArrayList<Bag> duplicateBags = new ArrayList<Bag>();
     		for (int j = 0; j < totalBags.size(); j++) {
-    			Bag newBag = totalBags.get(i).copyBag();
+    			Bag newBag = totalBags.get(j).copyBag();
     			duplicateBags.add(newBag);
     		}
     		Bag currentBag = duplicateBags.get(i);
