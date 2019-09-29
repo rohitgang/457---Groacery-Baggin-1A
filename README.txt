@@ -8,8 +8,8 @@ Collin Beckly, Steven Kim, Rohit Gangurde
 
 OVERVIEW:
 
-A program that determines a way to bag groceries that has constraints on what items can be bagged with what,
-how much you can put in a bag, and the number of bags available.
+A program that determines a way to bag groceries that has constraints on what items can be bagged 
+with what, how much you can put in a bag, and the number of bags available.
 
 INCLUDED FILES:
 
@@ -17,7 +17,8 @@ INCLUDED FILES:
 * Bag.java - source file, builds the bag objects with the proper attributes.
 * State.java - source file, builds the states containing bag and item objects. 
 * InvalidFileFormatException.java - source file, handles the exceptions in the programs.
-* Driver.java - driver file, calls the item.java, bag.java, state.java and InvalidFileFormatException.java to start the process and find solutions using either breadth first or depth first. 
+* Driver.java - driver file, calls the item.java, bag.java, state.java and InvalidFileFormatException.jav
+  a to start the process and find solutions using either breadth first or depth first. 
 
 COMPILING AND RUNNING:
 
@@ -31,7 +32,11 @@ Console output will give the results after the program finishes.
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS:
 
-The Item.java and Bag.java are the building blocks of this program. The Item.java class has the following attributes : weight, name, constraintsMap. The constraintsMap is the key in handling the constraints on the items. The hashmap has a value 1 where that item can be with another item. Let me demonstrate, consider an input to the program as such,
+The Item.java and Bag.java are the building blocks of this program. The Item.java class has the following 
+attributes : weight, name, constraintsMap. The constraintsMap is the key in handling the constraints on the items.
+The hashmap has a value 1 where that item can be with another item. Let me demonstrate, consider an input to the 
+program as such,
+
 3   //number of bags available
 7   // maximum bag size
 bread 3 + rolls
