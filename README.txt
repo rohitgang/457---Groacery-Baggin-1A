@@ -1,4 +1,3 @@
-# 457---Grocery-Baggin-1A
 *************************
 Grocery Bagging 1A
 CS457
@@ -6,12 +5,12 @@ CS457
 Collin Beckly, Steven Kim, Rohit Gangurde
 **************************
 
-OVERVIEW:
+OVERVIEW :
 
 A program that determines a way to bag groceries that has constraints on what items can be bagged 
 with what, how much you can put in a bag, and the number of bags available.
 
-INCLUDED FILES:
+INCLUDED FILES :
 
 * Item.java - source file, builds the item objects with the proper attributes.
 * Bag.java - source file, builds the bag objects with the proper attributes.
@@ -20,7 +19,7 @@ INCLUDED FILES:
 * Driver.java - driver file, calls the item.java, bag.java, state.java and InvalidFileFormatException.jav
   a to start the process and find solutions using either breadth first or depth first. 
 
-COMPILING AND RUNNING:
+COMPILING AND RUNNING :
 
 From the directory containing all source files, compile the driver class with the command :
 $ javac Driver.java
@@ -30,7 +29,7 @@ $ java Driver <filename> [-breadth / -depth]
 
 Console output will give the results after the program finishes.
 
-PROGRAM DESIGN AND IMPORTANT CONCEPTS:
+PROGRAM DESIGN AND IMPORTANT CONCEPTS :
 
 The Item.java and Bag.java are the building blocks of this program. The Item.java class has the following 
 attributes : weight, name, constraintsMap. The constraintsMap is the key in handling the constraints on the items.
@@ -85,4 +84,20 @@ the bags, items, dupeItems arrayList. We chose to perform breadth first search i
 terminates if we the states arrayList is empty. So, our depth first search implementation terminates and prints one 
 of the successful states. While the breadth first search implementation returns all the successful states.
 
+TESTING :
+
+We tested our program against all sorts of input. We handle our exceptions with a try-catch method. 
+Almost all of the erros all handled by us. If the program runs out of memory, we handle that as well.
+When parsing the files, we split a line using the whitespace character. We don't do this :
+ "String[] splitLine = line.split(" ");"
+Instead we used a regular expression to split the line like this :
+ "String[] splitLine = line.split("\\s+");"
+To handle any trailing or leading whitespaces when parsing, we use trim() method to get rid of them.
+
+DISCUSSION :
+
+One of the main problems for this program was to maintain a deep and a shallow copy. When implementing states
+we had to be sure that few of our array lists don't change when transitioning between states. So we had to 
+research about it. Because there were so many duplicate array lists, it was getting difficult to keep track
+of the copies. 
 
