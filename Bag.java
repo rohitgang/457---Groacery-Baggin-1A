@@ -17,26 +17,37 @@ public class Bag {
 	/**
 	 * Create a Bag item with a max weight
 	 * @param max - the maximum weight the bag can hold
+	 * @param itemNames - the names of all the items
 	 */
 	public Bag (int max, ArrayList<String> itemNames) {
 		maxSize = max;
 		currentWeight = 0;
 		bagConstraints = new HashMap<String, Boolean>();
 		itemsInBag = new ArrayList<Item>();
+		//set the map to all true (so that any item being added to an empty bag is a legal operation)
 		for (String item : itemNames) {
 			bagConstraints.put(item, true);
 		}
 	}
 	
+	/**
+	 * Create a bag that copies over all information so not memory is shared
+	 * @param max - the maximum weight the bag can hold
+	 * @param currentWeight - how much the bag currently weighs (from the items inside of it)
+	 * @param map - the HashMap of boolean values corresponding to item names
+	 * @param itemsInBag - the items currently in the bag
+	 */
 	public Bag (int max, int currentWeight, HashMap<String, Boolean> map, ArrayList<Item> itemsInBag) {
 		maxSize = max;
 		this.currentWeight = currentWeight;
 		HashMap<String, Boolean> dupeMap = new HashMap<String, Boolean>();
+		//copy over each key individually
 		for (String key : map.keySet()) {
 			dupeMap.put(key, map.get(key));
 		}
 		this.bagConstraints = dupeMap;
 		ArrayList<Item> dupeItemsInBag = new ArrayList<Item>();
+		//copy each item indivudally
 		for (Item item : itemsInBag) {
 			dupeItemsInBag.add(item.copyItem());
 		}
@@ -52,7 +63,9 @@ public class Bag {
 	public boolean addItemToBag(Item it, ArrayList<Item> allItems)
 	{
 		boolean added = false;
+		//verify we can add the item to the bag
 		if (canAdd(it)) {
+			//if we can, update weight, add the item to the list of items, and update the bag's map for future items to check against.
 			added = true;
 			currentWeight += it.getWeight();
 			itemsInBag.add(it);
@@ -104,6 +117,10 @@ public class Bag {
 		return currentWeight;
 	}
 	
+	/**
+	 * Returns a string that lists all the items in the bag in the format specified by the project.
+	 * @return a string of items in the bag separated by spaces
+	 */
 	public String getItemsInBag() {
 		String ret = "";
 		for (Item item : itemsInBag) {
@@ -112,6 +129,10 @@ public class Bag {
 		return ret;
 	}
 
+	/**
+	 * Does a deep copy of the bag so that no memory will be overwritten on subsequent updates
+	 * @return a copy of the current bag
+	 */
 	public Bag copyBag() {
 		return new Bag(maxSize, currentWeight, bagConstraints, itemsInBag);
 	}

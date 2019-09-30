@@ -31,22 +31,31 @@ public class State{
      */
     public ArrayList<State> nextPossibleStates(){
     	ArrayList<State> nextStates = new ArrayList<State>();
+    	//remove the next item to be added to this state
     	Item toBeAdded = itemsNotAdded.remove(0);
+    	//lets us know if we have added this item to an empty bag already.
     	boolean addedToEmpty = false;
+    	//go through each bag and find out if we can add the item to the bag. Only add
+    	//the item to an empty bag once because each empty bag is equivalent so there is no reason to 
+    	//add to two+ empty bags (same final state in different order)
     	for(int i = 0; i < totalBags.size(); i++) {
     		if (addedToEmpty) {
     			break;
     		}
+    		//deep copy of all the bags
     		ArrayList<Bag> duplicateBags = new ArrayList<Bag>();
     		for (int j = 0; j < totalBags.size(); j++) {
     			Bag newBag = totalBags.get(j).copyBag();
     			duplicateBags.add(newBag);
     		}
     		Bag currentBag = duplicateBags.get(i);
+    		//if bag is empty then we can add it and we have added to an empty bag
     		if (currentBag.getCurrentWeight() == 0) {
     			addedToEmpty = true;
     		}
     		
+    		//places the item into the bag and adds the state. If this fails then we 
+    		//just go on to the next bag (until we get to an empty bag).
     		if (currentBag.addItemToBag(toBeAdded, allItems)) {    			
     			nextStates.add(new State(duplicateBags, itemsNotAdded, allItems));
     		}
@@ -62,6 +71,10 @@ public class State{
         return itemsNotAdded.isEmpty();
     }
     
+    /**
+     * Gets all the bags in the state (for printing in Driver)
+     * @return the list of bags in the state
+     */
     public ArrayList<Bag> getBags() {
     	return totalBags;
     }

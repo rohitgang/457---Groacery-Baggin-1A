@@ -20,6 +20,12 @@ public class Item{
         weight= itemWeight;
     }
     
+    /**
+     * A deep copy of item that doesn't trample over any of it's own data
+     * @param weight - the weight of the item
+     * @param name - name of the item
+     * @param constraintsMap - the map of constraints the item has
+     */
     private Item(int weight, String name, HashMap<String, Boolean> constraintsMap) {
 		this.weight = weight;
 		this.name = name;
@@ -44,7 +50,7 @@ public class Item{
     getter method for the weight variable
     @return: weight
      */
-    int getWeight(){
+    public int getWeight(){
         return weight;
     }
     
@@ -52,7 +58,7 @@ public class Item{
     getter method for name variable
     @return: name
      */
-    String getName(){
+    public String getName(){
         return name;
     }
     
@@ -60,10 +66,14 @@ public class Item{
      * returns HashMap for the constraints of items
      * @return constraintsMap
      */
-    HashMap<String, Boolean> getConstraints(){
+    public HashMap<String, Boolean> getConstraints(){
     	return constraintsMap;
     }
 
+    /**
+     * Creates the deep copy of the item
+     * @return a copy of this item object
+     */
 	public Item copyItem() {
 		return new Item(weight, name, constraintsMap);
 	}
