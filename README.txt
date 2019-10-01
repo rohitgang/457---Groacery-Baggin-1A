@@ -21,13 +21,10 @@ INCLUDED FILES :
 
 COMPILING AND RUNNING :
 
-From the directory containing all source files, compile the driver class with the command :
-$ javac Driver.java
+To compile and run the compiled class file, run this:
+$ bagit <filename> [-breadth / -depth]
 
-Run the compiled class file with the command:
-$ java Driver <filename> [-breadth / -depth]
-
-Console output will give the results after the program finishes.
+Console output will give the results after the program finishes and it will clear the .class files
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS :
 
@@ -87,7 +84,7 @@ of the successful states. While the breadth first search implementation returns 
 TESTING :
 
 We tested our program against all sorts of input. We handle our exceptions with a try-catch method. 
-Almost all of the erros all handled by us. If the program runs out of memory, we handle that as well.
+Almost all of the erros all handled by us. We haven't handled the Java Heap Space Memory Error.
 When parsing the files, we split a line using the whitespace character. We don't do this :
  "String[] splitLine = line.split(" ");"
 Instead we used a regular expression to split the line like this :
