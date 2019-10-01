@@ -98,3 +98,57 @@ we had to be sure that few of our array lists don't change when transitioning be
 research about it. Because there were so many duplicate array lists, it was getting difficult to keep track
 of the copies. 
 
+OUTPUT: 
+
+If the program is ran with the -breadth option, the program would output all the possible states :
+success
+item0 item2 item11 
+item1 item4 
+item3 item12 
+item5 item14 
+item6 item9 
+item7 item10 
+item8 
+item13 
+success
+item0 item2 item11 
+item1 item4 
+item3 item12 
+item5 
+item6 item9 
+item7 item10 item14 
+item8 
+item13 
+.
+.
+.
+.
+success
+item0 item14 
+item1 
+item2 item13 
+item3 item11 item12 
+item4 item5 
+item6 item9 
+item7 item10 
+item8 
+success
+item0 
+item1 
+item2 item13 
+item3 item11 item12 
+item4 item5 
+item6 item9 
+item7 item10 item14 
+item8 
+
+If the program is ran with the -depth option, the program would output the first success state:
+success
+item0 
+item1 
+item2 item13 
+item3 item11 item12 
+item4 item5 
+item6 item9 
+item7 item10 item14 
+item
