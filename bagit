@@ -1,4 +1,2 @@
-#!/bin/bash
-javac Driver.java
+#~/bin/bash
 java Driver $1 $2
-rm *.class
