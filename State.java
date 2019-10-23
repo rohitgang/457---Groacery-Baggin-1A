@@ -1,66 +1,84 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 /**
 * State class for all the possible states
 * @author rohit gangurde, steven kim, colin beckley
  */
 public class State{
-    private ArrayList<Bag> totalBags;
-    private ArrayList<Item> itemsNotAdded;
-    private ArrayList<Item> allItems;
-
+    private PriorityQueue<Item> itemsNotAdded;
+    private ArrayList<Item> itemsAdded;
+    private int sumItemDomains;
+    private int level;
     /**
      * Create a state containing the bags and items still needing to be added
      * @param bags - all the bag objects
      * @param items - the items still needing to be added to bags
      * @param allItems - the list of total items
      */
-    public State(ArrayList<Bag> bags, ArrayList<Item> items, ArrayList<Item> allItems){
-        totalBags= bags;
-        ArrayList<Item> notAdded = new ArrayList<Item>();
-        for (Item item : items) {
-        	notAdded.add(item.copyItem());
-        }
-        itemsNotAdded= notAdded;
-        this.allItems = allItems;
+    public State(PriorityQueue<Item> items){
+    	itemsNotAdded = new PriorityQueue<Item>();
+    	sumItemDomains = 0;
+    	level = 0;
+    	itemsAdded = new ArrayList<Item>();
+    	for(Item item: items)
+    	{
+    		itemsNotAdded.add(item.copyItem());
+    		sumItemDomains += item.getDomain().size();
+    	}
     }
 
+    public State(PriorityQueue<Item> items, ArrayList<Item> addedItems, int level){
+    	itemsNotAdded = new PriorityQueue<Item>();
+    	sumItemDomains = 0;
+    	this.level = level++;
+    	this.itemsNotAdded= items;
+    	for(Item item : itemsNotAdded) {
+    		sumItemDomains += item.getDomain().size();
+    	}
+    	itemsAdded = new ArrayList<Item>();
+    	for (Item item : addedItems) {
+    		itemsAdded.add(item);
+    	}
+    }
+
+    
     /**
      * Find all next possible states from the current state
      * @return the list of next possible states
      */
-    public ArrayList<State> nextPossibleStates(){
+    public ArrayList<State> nextPossibleStates(boolean checkArcConsistency){
     	ArrayList<State> nextStates = new ArrayList<State>();
-    	//remove the next item to be added to this state
-    	Item toBeAdded = itemsNotAdded.remove(0);
-    	//lets us know if we have added this item to an empty bag already.
-    	boolean addedToEmpty = false;
-    	//go through each bag and find out if we can add the item to the bag. Only add
-    	//the item to an empty bag once because each empty bag is equivalent so there is no reason to 
-    	//add to two+ empty bags (same final state in different order)
-    	for(int i = 0; i < totalBags.size(); i++) {
-    		if (addedToEmpty) {
-    			break;
-    		}
-    		//deep copy of all the bags
-    		ArrayList<Bag> duplicateBags = new ArrayList<Bag>();
-    		for (int j = 0; j < totalBags.size(); j++) {
-    			Bag newBag = totalBags.get(j).copyBag();
-    			duplicateBags.add(newBag);
-    		}
-    		Bag currentBag = duplicateBags.get(i);
-    		//if bag is empty then we can add it and we have added to an empty bag
-    		if (currentBag.getCurrentWeight() == 0) {
-    			addedToEmpty = true;
-    		}
-    		
-    		//places the item into the bag and adds the state. If this fails then we 
-    		//just go on to the next bag (until we get to an empty bag).
-    		if (currentBag.addItemToBag(toBeAdded, allItems)) {    			
-    			nextStates.add(new State(duplicateBags, itemsNotAdded, allItems));
+    	Item toBeAdded = itemsNotAdded.poll();
+    	boolean addedToEmpty= false;
+    	boolean passOrFail= true;
+    	for(Bag bag: toBeAdded.getDomain()) {
+    		if(bag.canAdd(toBeAdded)) {
+    			if(bag.getCurrentWeight()==0) {
+    				addedToEmpty = true;
+    			}
+    			bag.addWeight(toBeAdded.getWeight());
+    			itemsAdded.add(toBeAdded);
+    			PriorityQueue<Item> duplicateItems = new PriorityQueue<Item>();
+    			Item[] itemsNotAddedArray = itemsNotAdded.toArray(new Item[0]);
+        		for (int j = 0; j < itemsNotAddedArray.length; j++) {
+        			if(!itemsNotAddedArray[j].getConstraints().get(toBeAdded.getName())) {
+        				itemsNotAddedArray[j].getDomain().remove(bag);
+        			}
+        			passOrFail&= itemsNotAddedArray[j].updateMap(toBeAdded.getName(), itemsNotAdded.toArray(new Item[0]), checkArcConsistency);
+        			duplicateItems.offer(itemsNotAddedArray[j]);
+        		}
+        		if(passOrFail) {
+        		nextStates.add(new State(duplicateItems, itemsAdded, this.level));
+        		}
+        		if(addedToEmpty) {
+        			break;	
+        		}
     		}
     	}
-        return nextStates;
+     
+    	return nextStates;
     }
 
     /**
@@ -71,11 +89,31 @@ public class State{
         return itemsNotAdded.isEmpty();
     }
     
-    /**
-     * Gets all the bags in the state (for printing in Driver)
-     * @return the list of bags in the state
-     */
-    public ArrayList<Bag> getBags() {
-    	return totalBags;
+    
+    public int getLevel() {
+    	return this.level;
     }
+    
+    public int getTotalItemDomains() {
+    	return this.sumItemDomains;
+    }
+    
+	public String toString() {
+		String master="success\n";
+		HashMap<Bag, String> bob= new HashMap<Bag,String>();
+		for(Item item: itemsAdded) {
+			Bag bagInHere= item.getDomain().get(0);
+			if(bob.containsKey(bagInHere)) {
+				bob.put(bagInHere, bob.get(bagInHere)+" "+item.getName());
+			}
+			else {
+				bob.put(bagInHere, item.getName());
+			}
+		}
+		for (Bag bag: bob.keySet()) {
+			master+= bob.get(bag) + "\n";
+		}
+		return master;
+	}
+	
 }
