@@ -79,6 +79,12 @@ public class Item implements Comparable<Item>{
 	public Item copyItem() {
 		return new Item(this.name, this.weight, this.domain, this.constraintsMap);
 	}
+	
+	public Item copyItem(Bag bag) {
+		ArrayList<Bag> newDomain = new ArrayList<Bag>();
+		newDomain.add(bag);
+		return new Item(this.name, this.weight, newDomain, this.constraintsMap);
+	}
 
 	public boolean hasBagInDomain(Bag bag) {
 		return this.domain.contains(bag);

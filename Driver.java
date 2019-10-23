@@ -40,7 +40,10 @@ public class Driver {
 	public static void main(String[] args) throws InvalidFileFormatException {
 		try {
 			String fileName = args[0];
-			String choice = args[1];
+			String choice = "";
+			if (args.length == 2) {
+				choice = args[1];
+			}
 
 			if (choice.equals("-local")) {
 				localSearch = true;
@@ -111,7 +114,7 @@ public class Driver {
 
 		int i = 0;
 		for (Item item : Items) {
-			System.out.println(Bags.size() + " " + item.getName());
+//			System.out.println(Bags.size() + " " + item.getName());
 			Bags.get(i).addItem(item);
 			i = (i + 1) % Bags.size();
 		}
@@ -155,7 +158,7 @@ public class Driver {
 					minValue = currValue;
 				}
 			}
-			System.out.println("Moving Item: " + currItem.getName() + " to " + tempBag);
+//			System.out.println("Moving Item: " + currItem.getName() + " to " + tempBag);
 			tempBag.addItem(currItem);
 			if (currBag.equals(tempBag)) {
 				currItem.setLastBag(tempBag);	

@@ -33,13 +33,13 @@ public class State{
     	itemsNotAdded = new PriorityQueue<Item>();
     	sumItemDomains = 0;
     	this.level = level++;
-    	this.itemsNotAdded= items;
-    	for(Item item : itemsNotAdded) {
+    	for(Item item : items) {
+    		itemsNotAdded.add(item.copyItem());
     		sumItemDomains += item.getDomain().size();
     	}
     	itemsAdded = new ArrayList<Item>();
     	for (Item item : addedItems) {
-    		itemsAdded.add(item);
+    		itemsAdded.add(item.copyItem());
     	}
     }
 
@@ -54,15 +54,29 @@ public class State{
     	boolean addedToEmpty= false;
     	boolean passOrFail= true;
     	for(Bag bag: toBeAdded.getDomain()) {
-    		if(bag.canAdd(toBeAdded)) {
+    		ArrayList<Item> itemsInBag = new ArrayList<Item>();
+    		itemsInBag.add(toBeAdded);
+    		for (Item item : itemsAdded) {
+    			if (item.hasBagInDomain(bag)) {
+    				itemsInBag.add(item);
+    			}
+    		}
+    		if(bag.canAdd(itemsInBag)) {
     			if(bag.getCurrentWeight()==0) {
     				addedToEmpty = true;
     			}
-    			bag.addWeight(toBeAdded.getWeight());
-    			itemsAdded.add(toBeAdded);
+    			
+    			itemsAdded.add(toBeAdded.copyItem(bag));
     			PriorityQueue<Item> duplicateItems = new PriorityQueue<Item>();
-    			Item[] itemsNotAddedArray = itemsNotAdded.toArray(new Item[0]);
+    			//Item[] itemsNotAddedArray = itemsNotAdded.toArray(new Item[0]);
+    			Item[] itemsNotAddedArray = new Item[itemsNotAdded.size()];
+    			int i = 0;
+    			for (Item item : itemsNotAdded) {
+    				itemsNotAddedArray[i] = item.copyItem();
+    				i++;
+    			}
         		for (int j = 0; j < itemsNotAddedArray.length; j++) {
+        			//System.out.println(itemsNotAddedArray[j].getConstraints().get(toBeAdded.getName()) + " " + j + " " + toBeAdded.getName());
         			if(!itemsNotAddedArray[j].getConstraints().get(toBeAdded.getName())) {
         				itemsNotAddedArray[j].getDomain().remove(bag);
         			}
@@ -70,7 +84,7 @@ public class State{
         			duplicateItems.offer(itemsNotAddedArray[j]);
         		}
         		if(passOrFail) {
-        		nextStates.add(new State(duplicateItems, itemsAdded, this.level));
+        			nextStates.add(new State(duplicateItems, itemsAdded, this.level));
         		}
         		if(addedToEmpty) {
         			break;	

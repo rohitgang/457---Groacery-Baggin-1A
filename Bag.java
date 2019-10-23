@@ -130,9 +130,13 @@ public class Bag {
 	 * @param it - the item we are checking
 	 * @return true if can be added, false otherwise
 	 */
-	public boolean canAdd(Item it)
+	public boolean canAdd(ArrayList<Item> it)
 	{
-		return it.getWeight() + currentWeight <= maxSize;
+		int itemWeights = 0;
+		for (Item item : it) {
+			itemWeights += item.getWeight();
+		}
+		return itemWeights + currentWeight <= maxSize;
 	}
 	
 	public void addWeight(int weight) {
