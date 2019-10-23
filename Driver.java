@@ -30,6 +30,7 @@ public class Driver {
 	private static int stateCounter = 0;
 	private static boolean checkArcConsistency = true;
 	private static boolean localSearch = false;
+	private final static boolean DEBUG = true;
 
 	/**
 	 * Main method that drives this project
@@ -103,8 +104,7 @@ public class Driver {
 	}
 
 	private static void localSearch() {
-		Random rand = new Random(//123);
-				);
+		Random rand = new Random();
 		Items.sort(new Comparator<Item>() {
 			@Override
 			public int compare(Item thisItem, Item thatItem) {
@@ -112,62 +112,109 @@ public class Driver {
 			}
 		});
 
+		//index of bag to add the item to
 		int i = 0;
+		//1 = next bag, -1 = prev bag
+		int incrementValue = 1;
+		//start by adding items into bags, doing a snake pattern
 		for (Item item : Items) {
-//			System.out.println(Bags.size() + " " + item.getName());
 			Bags.get(i).addItem(item);
-			i = (i + 1) % Bags.size();
+			i += incrementValue;
+			if (i == Bags.size() - 1 || i == 0) {
+				incrementValue = incrementValue * -1;
+			}
 		}
+		
+		findMeASuccessState(rand);
+	}
 
+	private static void findMeASuccessState(Random rand) {
+		Bag[] stuckInLoopChecker = new Bag[2];
+		for (int j = 0; j < stuckInLoopChecker.length; j++) {
+			stuckInLoopChecker[j] = Bags.get(j);
+		}
+		int inRecentlyUsedIndex = 0;
 		boolean successStateFound = false;
 		while (!successStateFound) {
 			stateCounter++;
+			//check if all bags are in valid configuration
 			successStateFound = true;
 			for (Bag bag : Bags) {
 				successStateFound &= bag.getGoodBag();
 			}
+			//don't continue if we have found a success state
+			//(up here instead of below just in case we luck into a perfect bag configuration immediately)
 			if (successStateFound) {
 				break;
 			}
-			int bagnum = 0;
-			for (Bag bag : Bags) {
-				//System.out.println("Bag number: " + bagnum);
-				for (Item item : bag.getItemsInBag()) {
-				//	System.out.print(item.getName() + " ");
-				}
-				//System.out.println();
-				bagnum++;
-			}
-			int bagIndex = rand.nextInt(Bags.size());
-			Bag currBag = Bags.get(bagIndex);
-			// maybe worst item from bag?
-			Item currItem = currBag.removeItem(rand);
 			
-			while (currItem == null) {
-				currBag = Bags.get((++bagIndex % Bags.size()));
-				currItem = currBag.removeItem(rand);
+			//initialize to null before finding the bag + item combo we want to remove
+			Bag currBag = null;
+			Item currItemInBag = null;
+			
+			while (currItemInBag == null) {
+				//get a random 'bad' bag
+				currBag = Bags.get(rand.nextInt(Bags.size()));
+				while(currBag.getGoodBag() == true) {
+					currBag = Bags.get(rand.nextInt(Bags.size()));
+				}
+				//get any random item from that bad bag
+				currItemInBag = currBag.removeItem(rand);
 			}
 
 			int minValue = Integer.MIN_VALUE;
-			// null or new Bag
+			// find the value of all possible bags we can put this item into
+			// temp bag will be the bag with the highest value
 			Bag tempBag = null;
 			for (Bag bag : Bags) {
-				int currValue = bag.valueOfAddingItem(currItem);
+				int currValue = bag.valueOfAddingItem(currItemInBag);
 				if (currValue > minValue) {
 					tempBag = bag;
 					minValue = currValue;
 				}
 			}
-//			System.out.println("Moving Item: " + currItem.getName() + " to " + tempBag);
-			tempBag.addItem(currItem);
+			if (DEBUG) System.out.println("Moving Item: " + currItemInBag.getName() + " to " + tempBag);
+			tempBag.addItem(currItemInBag);
+			boolean inRecentlyUsed = false;
+			boolean shuffleEverything = true;
+			for (Bag bag : stuckInLoopChecker) {
+				if (currBag.equals(bag)) {
+					inRecentlyUsed = true;
+					bag.recentUsedCount++;
+				}
+				if (bag.recentUsedCount < 20) {
+					shuffleEverything = false;
+				}
+			}
+			if (!inRecentlyUsed) {
+				stuckInLoopChecker[inRecentlyUsedIndex].recentUsedCount = 0;
+				stuckInLoopChecker[inRecentlyUsedIndex] = currBag;
+				inRecentlyUsedIndex = (inRecentlyUsedIndex + 1) % stuckInLoopChecker.length;
+			}
+			
 			if (currBag.equals(tempBag)) {
-				currItem.setLastBag(tempBag);	
+				currItemInBag.setLastBag(tempBag);	
+			} else {
+				currItemInBag.setLastBag(null);
+			}
+			
+			if (shuffleEverything) {
+				for (Bag bag : stuckInLoopChecker) {
+					Item it = bag.removeItem(rand);
+					while (it != null) {
+						Bags.get(rand.nextInt(Bags.size())).addItem(it);
+						it = bag.removeItem(rand);
+					}
+					bag.recentUsedCount = 0;
+				}
+				System.out.println("################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################");
 			}
 		}
+		
 	}
 
 	private static void printSuccessStates() {
-		System.out.println("Total states searched: " + stateCounter);
+		if (DEBUG) System.out.println("Total states searched: " + stateCounter);
 		if (successStates.isEmpty()) {
 			System.out.println("failure");
 		} else {

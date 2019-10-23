@@ -75,6 +75,14 @@ public class Item implements Comparable<Item>{
     HashMap<String, Boolean> getConstraints(){
     	return constraintsMap;
     }
+    
+    public Boolean constraintsGet(String itemName) {
+    	return constraintsMap.get(itemName);
+    }
+    
+    public void constraintsPut(String itemName, Boolean value) {
+    	constraintsMap.put(itemName, value);
+    }
 
 	public Item copyItem() {
 		return new Item(this.name, this.weight, this.domain, this.constraintsMap);
@@ -94,17 +102,18 @@ public class Item implements Comparable<Item>{
 		return domain;
 	}
 
-	public boolean updateMap(String toBeRemoved, Item[] itemsNotAdded, boolean checkArcConsistency) {
+	public boolean updateMap(Item toBeRemoved, Item[] itemsNotAdded, boolean checkArcConsistency, Bag bagAssigned) {
 		//default return will be true (not checking or not in map of affected item)
 		boolean arcConsistencyCheck = true;
 		//check if this item was connected to the item that was removed at all (true or false)
-		if(this.constraintsMap.containsKey(toBeRemoved)) {
+		if(this.constraintsMap.containsKey(toBeRemoved.getName())) {
 			//if it was false (our map is connected on 0's)
-			if (!this.constraintsMap.get(toBeRemoved)) {
+			if (!this.constraintsMap.get(toBeRemoved.getName())) {
+				this.domain.remove(bagAssigned);
 				//one less zero in this item's constraints map
 				numZerosInConstraints--;
 				//remove the item that has now been added from the map
-				this.constraintsMap.remove(toBeRemoved);
+				this.constraintsMap.remove(toBeRemoved.getName());
 				//if we are checking arc consistency
 				if (checkArcConsistency) {
 					//for everything left to be added 
@@ -116,13 +125,9 @@ public class Item implements Comparable<Item>{
 							//check that there exists a bag this domain that is not the same as any one of the bags in our connected Item's domain
 							//break as soon as we find one
 							for (Bag thisBag : this.domain) {
-								if (arcConsistencyCheck) {
-									break;
-								}
+								boolean goodValueFound = false;
 								for (Bag thatBag : item.domain) {
-									if (arcConsistencyCheck) {
-										break;
-									}
+									
 									arcConsistencyCheck |= !thisBag.equals(thatBag);
 								}
 							}
@@ -135,13 +140,11 @@ public class Item implements Comparable<Item>{
 	}
 
 	public void setLastBag(Bag tempBag) {
-		// TODO Auto-generated method stub
 		this.myLastBag = tempBag;
 		
 	}
 
 	public Bag getLastBag() {
-		// TODO Auto-generated method stub
 		return this.myLastBag;
 	}
 

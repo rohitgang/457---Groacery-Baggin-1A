@@ -8,7 +8,6 @@ import java.util.Random;
 /**
  * Bags hold Items
  * @author Steven, Colin Beckley, Rohit 
- *
  */
 public class Bag {
 	
@@ -21,6 +20,7 @@ public class Bag {
 	private boolean goodBag;
 	private HashMap<String, Boolean> localSearchConstraintsMap;
 	private ArrayList<String> allItemNames;
+	public int recentUsedCount = 0;
 	/**
 	 * Create a Bag item with a max weight
 	 * @param max - the maximum weight the bag can hold
@@ -30,32 +30,36 @@ public class Bag {
 		currentWeight = 0;
 	}
 	
-	//local search constructor
+	/**
+	 * Create a Bag for local searches
+	 * @param max - maximum weight the bag can hold
+	 * @param itemNames - the names of all items in the search
+	 */
 	public Bag (int max, ArrayList<String> itemNames) {
 		maxSize = max;
 		currentWeight = 0;
 		goodBag = true;
 		localSearchItemsInBag = new ArrayList<Item>();
+		//start with a hashmap of true for all Item names
 		localSearchConstraintsMap = new HashMap<String, Boolean>();
 		for (String itemName : itemNames) {
 			localSearchConstraintsMap.put(itemName, true);
 		}
+		//itemNames is never changed after creations
 		allItemNames = new ArrayList<String>();
 		allItemNames.addAll(itemNames);
 		//allItemNames = itemNames;
 	}
 	
-	public Bag (int max, int currWeight) {
-		maxSize = max;
-		currentWeight = currWeight;
-	}
-	
+	/**
+	 * Local search function to add an item to this bag
+	 * @param item - the item to be added to the bag
+	 */
 	public void addItem(Item item) {
-		HashMap<String, Boolean> itemConstraints = item.getConstraints();
 		this.currentWeight += item.getWeight();
 		localSearchItemsInBag.add(item);
 		for (String  key : allItemNames) {
-			localSearchConstraintsMap.put(key, itemConstraints.get(key) && localSearchConstraintsMap.get(key));
+			localSearchConstraintsMap.put(key, item.constraintsGet(key) && localSearchConstraintsMap.get(key));
 		}
 		goodBag = goodBagCheck();
 	}
@@ -66,7 +70,6 @@ public class Bag {
 			return Integer.MIN_VALUE + 1;
 		}
 		
-		HashMap<String, Boolean> itemConstraints = item.getConstraints();
 		if (localSearchConstraintsMap.get(item.getName())) {
 			value += 150*allItemNames.size();
 		} 
@@ -74,14 +77,14 @@ public class Bag {
 			value -= 150*allItemNames.size();
 		}
 		
-		for (String key : itemConstraints.keySet()) {
-			if (itemConstraints.get(key) && localSearchConstraintsMap.get(key)) {
-				value += 15 * allItemNames.size();
+		for (String key : allItemNames) {
+			if (item.constraintsGet(key) && localSearchConstraintsMap.get(key)) {
+				value += 5 * allItemNames.size();
 			} else {
-				value += -15 * allItemNames.size();
+				value += -5 * allItemNames.size();
 			}
 		}
-		//value += this.maxSize - (item.getWeight() + this.currentWeight);
+		value += (this.maxSize - (item.getWeight() + this.currentWeight)) * 10;
 		return value;
 	}
 	
@@ -96,7 +99,7 @@ public class Bag {
 		for (String  key : allItemNames) {
 			localSearchConstraintsMap.put(key, true);
 			for(Item localItem : localSearchItemsInBag) {
-				localSearchConstraintsMap.put(key, localItem.getConstraints().get(key) && localSearchConstraintsMap.get(key));
+				localSearchConstraintsMap.put(key, localItem.constraintsGet(key) && localSearchConstraintsMap.get(key));
 			}
 		}
 		goodBag = goodBagCheck();
@@ -122,7 +125,7 @@ public class Bag {
 	}
 	
 	public boolean getGoodBag() {
-		return goodBagCheck();
+		return goodBag;
 	}
 	
 	/**
@@ -139,21 +142,12 @@ public class Bag {
 		return itemWeights + currentWeight <= maxSize;
 	}
 	
-	public void addWeight(int weight) {
-		this.currentWeight += weight;
-	}
-	
 	/**
 	 * Returns currentWeight
 	 * @return currentWeight
 	 */
 	public int getCurrentWeight() {
 		return currentWeight;
-	}
-
-	public Bag copyBag() {
-		return new Bag(maxSize, currentWeight);
-	}
-	
+	}	
 
 }

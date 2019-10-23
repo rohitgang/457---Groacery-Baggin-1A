@@ -32,7 +32,7 @@ public class State{
     public State(PriorityQueue<Item> items, ArrayList<Item> addedItems, int level){
     	itemsNotAdded = new PriorityQueue<Item>();
     	sumItemDomains = 0;
-    	this.level = level++;
+    	this.level = ++level;
     	for(Item item : items) {
     		itemsNotAdded.add(item.copyItem());
     		sumItemDomains += item.getDomain().size();
@@ -62,11 +62,15 @@ public class State{
     			}
     		}
     		if(bag.canAdd(itemsInBag)) {
-    			if(bag.getCurrentWeight()==0) {
+    			if (itemsInBag.size() == 0) {
     				addedToEmpty = true;
     			}
     			
-    			itemsAdded.add(toBeAdded.copyItem(bag));
+    			ArrayList<Item> copyItemsAdded = new ArrayList<Item>();
+    			for(Item item : itemsAdded) {
+    				copyItemsAdded.add(item.copyItem());
+    			}
+    			copyItemsAdded.add(toBeAdded.copyItem(bag));
     			PriorityQueue<Item> duplicateItems = new PriorityQueue<Item>();
     			//Item[] itemsNotAddedArray = itemsNotAdded.toArray(new Item[0]);
     			Item[] itemsNotAddedArray = new Item[itemsNotAdded.size()];
@@ -76,22 +80,21 @@ public class State{
     				i++;
     			}
         		for (int j = 0; j < itemsNotAddedArray.length; j++) {
-        			//System.out.println(itemsNotAddedArray[j].getConstraints().get(toBeAdded.getName()) + " " + j + " " + toBeAdded.getName());
-        			if(!itemsNotAddedArray[j].getConstraints().get(toBeAdded.getName())) {
-        				itemsNotAddedArray[j].getDomain().remove(bag);
-        			}
-        			passOrFail&= itemsNotAddedArray[j].updateMap(toBeAdded.getName(), itemsNotAdded.toArray(new Item[0]), checkArcConsistency);
+        			passOrFail&= itemsNotAddedArray[j].updateMap(toBeAdded, itemsNotAddedArray, checkArcConsistency, bag);
         			duplicateItems.offer(itemsNotAddedArray[j]);
         		}
         		if(passOrFail) {
-        			nextStates.add(new State(duplicateItems, itemsAdded, this.level));
+        			nextStates.add(new State(duplicateItems, copyItemsAdded, this.level));
         		}
+        			
         		if(addedToEmpty) {
         			break;	
         		}
     		}
     	}
-     
+     for(State state : nextStates) {
+    	 System.out.println(state.getLevel());
+     }
     	return nextStates;
     }
 
