@@ -63,7 +63,7 @@ public class Bag {
 	public int valueOfAddingItem(Item item) {
 		int value = 0;
 		if (this.equals(item.getLastBag())) {
-			return Integer.MIN_VALUE;
+			return Integer.MIN_VALUE + 1;
 		}
 		
 		HashMap<String, Boolean> itemConstraints = item.getConstraints();
