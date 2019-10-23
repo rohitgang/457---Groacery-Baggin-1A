@@ -22,14 +22,18 @@ INCLUDED FILES :
 COMPILING AND RUNNING :
 
 To compile and run the compiled class file, run this:
-$ bagit <filename> [-breadth / -depth]
+$ bagit <filename> [implementation]
+
+If implementation is empty, the defualt depth search with mrv,lcv heuristic using the arc consistency check will be implemented. 
+If implementation is "-slow", the depth search with mrv,lcv heuristic without the acr consistency check will be implemented.
+If implementation is "-local", a hill climbing search will be implemented.
 
 Console output will give the results after the program finishes and it will clear the .class files
 
 PROGRAM DESIGN AND IMPORTANT CONCEPTS :
 
 The Item.java and Bag.java are the building blocks of this program. The Item.java class has the following 
-attributes : weight, name, constraintsMap. The constraintsMap is the key in handling the constraints on the items.
+attributes : weight, name, constraintsMap, domain and myLastBag. The constraintsMap is the key in handling the constraints on the items.
 The hashmap has a value 1 where that item can be with another item. Let me demonstrate, consider an input to the 
 program as such,
 
@@ -46,19 +50,29 @@ The hashMap for the bread can be visualised like this,
 bread |   1   |   1   |    0   |   0  |     0      |
 
 Hence, the hashMap for the item - bread, dictates the constraints and controls items going in the bag.
+The domain variable is an arraylist which contains the bags in which the item can be. Domain is updated 
+after "applying constraints" on the connected items. In a graph, the items are connected if they can't be with
+each other. Considering the same input as above, the graph would look like this:
 
-The Bag.java class has the following attributes : maxSize, currentWeight, bagConstraints, itemsInBag.
-The maxSize variable is used to set a limit on the weight of the items in the bag. The currentWeight 
-variable helps in keeping a check on the items in the bag not exceeding the limit for that bag.
-The bagConstraints is a hashMap. The utility of this hashMap is to check if the item we are putting
-in the bag agrees with the items already in the bag. We chose hashMap as the data structure to check 
-for constraints as this helps us keep the constraint checking efficient as we are retrieving value in 
-constant time and we are just using the '&' operator to check the retrieved values. The itemsInBag 
+               bread----------
+              /    \          |
+     lima_beans -- meat       |
+          \            \      |
+        rolls---------squash--
+      
+ In this graph, bread is connected to lima_beans, squash and meat because it can't be with them. 
+
+The Bag.java class has the following attributes : maxSize, currentWeight, localSearchItemsInBag, goodBag,
+localSearchConstraintsMap and alItemNames. The maxSize variable is used to set a limit on the weight of the items in the bag. The currentWeight variable helps in keeping a check on the items in the bag not exceeding the limit for that bag.
+The localSearchConstraintsMap is a hashMap. The utility of this hashMap is to check if the item we are putting
+in the bag agrees with the items already in the bag. We use this hashMap only when localSearch implemented. We chose hashMap 
+as the data structure to check for constraints as this helps us keep the constraint checking efficient as we are 
+retrieving value in constant time and we are just using the '&' operator to check the retrieved values. The localSearchItemsInBag 
 variable is an ArrayList of type Items. This helps us check if anymore items can be added to the bag and 
-if they satisfy the constraint.
+if they satisfy the constraint. For the mrv, lcv implementation, we never use most of the properties of the Bag class.
 
-The State.java class has the following attributes : totalBags, itemsNotAdded, allItems.
-The totalBags variable is an ArrayList of type Bag. It has the number of Bags specfied as input. 
+The State.java class has the following attributes : sumItemDomains, itemsNotAdded, itemsAdded, level.
+The itemsAdded variable is an ArrayList of type Item. It has the items in the bag for that state. 
 The itemsNotAdded variable is an ArrayList of type Item. It has the items not added to the bags for that state.
 The allItems variable is an ArrayList of type Item. This does not change during any point in the program.
 The State.java class plays a key role when implementing depth first or breadth first search. It creates the 
