@@ -1,8 +1,5 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -13,7 +10,6 @@ public class Bag {
 	
 	private int maxSize;
 	private int currentWeight;
-	private ArrayList<String> itemsInBag; 
 	
 	
 	private ArrayList<Item> localSearchItemsInBag;
@@ -45,10 +41,8 @@ public class Bag {
 		for (String itemName : itemNames) {
 			localSearchConstraintsMap.put(itemName, true);
 		}
-		//itemNames is never changed after creations
 		allItemNames = new ArrayList<String>();
 		allItemNames.addAll(itemNames);
-		//allItemNames = itemNames;
 	}
 	
 	/**
@@ -64,6 +58,11 @@ public class Bag {
 		goodBag = goodBagCheck();
 	}
 	
+	/**
+	 * Check the value of adding an item to this bag
+	 * @param item - the item to be added
+	 * @return the larger the number the better the fit in the big
+	 */
 	public int valueOfAddingItem(Item item) {
 		int value = 0;
 		if (this.equals(item.getLastBag())) {
@@ -88,6 +87,11 @@ public class Bag {
 		return value;
 	}
 	
+	/**
+	 * Removes a random item from this bag
+	 * @param rand - used to generate a random number to remove
+	 * @return the removed item
+	 */
 	public Item removeItem(Random rand) {
 		if (localSearchItemsInBag.size() == 0) {
 			return null;
@@ -95,6 +99,7 @@ public class Bag {
 		int randNum = rand.nextInt(localSearchItemsInBag.size());
 		Item item = localSearchItemsInBag.remove(randNum);
 		currentWeight -= item.getWeight();
+		//When we remove an item we have to recreate the constraints map in this bag
 		localSearchConstraintsMap = new HashMap<String, Boolean>();
 		for (String  key : allItemNames) {
 			localSearchConstraintsMap.put(key, true);
@@ -106,10 +111,18 @@ public class Bag {
 		return item;
 	}
 	
+	/**
+	 * Gets all the items in this bag
+	 * @return the items in this bag
+	 */
 	public ArrayList<Item> getItemsInBag() {
 		return this.localSearchItemsInBag;
 	}
 	
+	/**
+	 * Tells you if this bag is in a valid configuration
+	 * @return true if valid, false otherwise
+	 */
 	private boolean goodBagCheck() {
 		boolean check = true;
 		if (this.currentWeight > this.maxSize) {

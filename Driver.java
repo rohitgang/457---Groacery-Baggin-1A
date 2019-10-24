@@ -5,7 +5,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import java.util.Scanner;
-import java.util.Stack;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Random;
@@ -82,6 +81,9 @@ public class Driver {
 
 	}
 
+	/**
+	 * prints the bags after a local search has completed
+	 */
 	private static void printBags() {
 		if (DEBUG) System.out.println("State Counter: " + stateCounter);
 		System.out.println("success");
@@ -94,6 +96,9 @@ public class Driver {
 
 	}
 
+	/**
+	 * Runs a local search
+	 */
 	private static void localSearch() {
 		Random rand = new Random();
 		Items.sort(new Comparator<Item>() {
@@ -119,7 +124,12 @@ public class Driver {
 		findMeASuccessState(rand);
 	}
 
+	/**
+	 * A loop that the local search goes through to iterate onto better situations
+	 * @param rand - used to generate random numbers
+	 */
 	private static void findMeASuccessState(Random rand) {
+		//this bag array is to find if we have entered a state of adding/removing items from two bags onto each other
 		Bag[] stuckInLoopChecker = new Bag[2];
 		for (int j = 0; j < stuckInLoopChecker.length; j++) {
 			stuckInLoopChecker[j] = Bags.get(j);
@@ -159,20 +169,24 @@ public class Driver {
 			Bag tempBag = null;
 			for (Bag bag : Bags) {
 				int currValue = bag.valueOfAddingItem(currItemInBag);
+				//keep the best value bag in memory to add the item into
 				if (currValue > minValue) {
 					tempBag = bag;
 					minValue = currValue;
 				}
 			}
 			tempBag.addItem(currItemInBag);
+			
 			boolean inRecentlyUsed = false;
 			boolean shuffleEverything = true;
+			//add some values onto the stuck in loop checker
 			for (Bag bag : stuckInLoopChecker) {
 				if (currBag.equals(bag)) {
 					inRecentlyUsed = true;
 					bag.recentUsedCount++;
 				}
-				if (bag.recentUsedCount < 20) {
+				//if this is never reached then we are probably stuck
+				if (bag.recentUsedCount < 25) {
 					shuffleEverything = false;
 				}
 			}
@@ -182,12 +196,14 @@ public class Driver {
 				inRecentlyUsedIndex = (inRecentlyUsedIndex + 1) % stuckInLoopChecker.length;
 			}
 			
+			//Sets the last bag if we have moved to the same bag we came out of, that way we don't do this operation on repeat
 			if (currBag.equals(tempBag)) {
 				currItemInBag.setLastBag(tempBag);	
 			} else {
 				currItemInBag.setLastBag(null);
 			}
 			
+			//if we are stuck then empty out the stuck bags and try again
 			if (shuffleEverything) {
 				for (Bag bag : stuckInLoopChecker) {
 					Item it = bag.removeItem(rand);
@@ -202,6 +218,9 @@ public class Driver {
 		
 	}
 
+	/**
+	 * Prints the contents of successStates after the priority queue search is finished
+	 */
 	private static void printSuccessStates() {
 		if (DEBUG) System.out.println("State Counter: " + stateCounter);
 		if (successStates.isEmpty()) {
@@ -213,6 +232,10 @@ public class Driver {
 		}
 	}
 
+	/**
+	 * Runs a priority queue search on the states
+	 * @param nextStates - the states being checked
+	 */
 	private static void prioritySearch(PriorityQueue<State> nextStates) {
 		while (!nextStates.isEmpty() && successStates.isEmpty()) {
 			stateCounter++;
@@ -221,6 +244,7 @@ public class Driver {
 				successStates.add(nextState);
 			} else {
 				for (State newState : nextState.nextPossibleStates(checkArcConsistency)) {
+					//stateCounter++;
 					nextStates.offer(newState);
 				}
 			}

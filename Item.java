@@ -37,13 +37,15 @@ public class Item implements Comparable<Item>{
 		this.constraintsMap = dupeConstraintsMap;
     }
    
+    /**
+     * Used to compare this item to another
+     */
     public int compareTo(Item item) 
     {
     	if (this.domain.size() != item.domain.size()) 
     	{
     		return this.domain.size() - item.domain.size();	
     	}
-    	//maybe add weight to this metric
     	else if (this.numZerosInConstraints != item.numZerosInConstraints) 
     	{
     		return item.numZerosInConstraints - this.numZerosInConstraints;
@@ -76,74 +78,73 @@ public class Item implements Comparable<Item>{
     	return constraintsMap;
     }
     
+    /**
+     * Find the value associated with an item name
+     * @param itemName - the name of the item to get
+     * @return true if valid with this item, false otherwise
+     */
     public Boolean constraintsGet(String itemName) {
     	return constraintsMap.get(itemName);
     }
     
+    /**
+     * Put a value onto the constraints map for this item
+     * @param itemName - the key
+     * @param value - the value
+     */
     public void constraintsPut(String itemName, Boolean value) {
     	constraintsMap.put(itemName, value);
     }
 
+    /**
+     * Does a deep copy of this item
+     * @return the copied item
+     */
 	public Item copyItem() {
 		return new Item(this.name, this.weight, this.domain, this.constraintsMap);
 	}
 	
+	/**
+	 * Like above but set the domain to one specific bag
+	 * @param bag - the only bag remaining in the domain
+	 * @return the copied item
+	 */
 	public Item copyItem(Bag bag) {
 		ArrayList<Bag> newDomain = new ArrayList<Bag>();
 		newDomain.add(bag);
 		return new Item(this.name, this.weight, newDomain, this.constraintsMap);
 	}
 
+	/**
+	 * Finds if the bag is in this item's domain
+	 * @param bag - the bag to check
+	 * @return true if in the domain, false otherwise
+	 */
 	public boolean hasBagInDomain(Bag bag) {
 		return this.domain.contains(bag);
 	}
 
+	/**
+	 * Gets all the bags in this item's domain
+	 * @return the bags in the domain
+	 */
 	public ArrayList<Bag> getDomain() {
 		return domain;
 	}
 
-	public boolean updateMap(Item toBeRemoved, Item[] itemsNotAdded, boolean checkArcConsistency, Bag bagAssigned) {
-		//default return will be true (not checking or not in map of affected item)
-		boolean arcConsistencyCheck = true;
-		//check if this item was connected to the item that was removed at all (true or false)
-		if(this.constraintsMap.containsKey(toBeRemoved.getName())) {
-			//if it was false (our map is connected on 0's)
-			if (!this.constraintsMap.get(toBeRemoved.getName())) {
-				this.domain.remove(bagAssigned);
-				//one less zero in this item's constraints map
-				numZerosInConstraints--;
-				//remove the item that has now been added from the map
-				this.constraintsMap.remove(toBeRemoved.getName());
-				//if we are checking arc consistency
-				if (checkArcConsistency) {
-					//for everything left to be added 
-					for (Item item : itemsNotAdded) {
-						//check the item not added's map and see if it has any connections we need to verify any incoming connections (0's on map)
-						if (!this.constraintsMap.get(item.getName())) {
-							//now we default to failure of checking arc consistency (any break before this means everything is fine)
-							arcConsistencyCheck = false;
-							//check that there exists a bag this domain that is not the same as any one of the bags in our connected Item's domain
-							//break as soon as we find one
-							for (Bag thisBag : this.domain) {
-								boolean goodValueFound = false;
-								for (Bag thatBag : item.domain) {
-									
-									arcConsistencyCheck |= !thisBag.equals(thatBag);
-								}
-							}
-						}
-					}	
-				}
-			}
-		}
-		return arcConsistencyCheck;
-	}
-
+	/**
+	 * Sets the last bag this item was put into
+	 * @param tempBag - the bag this item was last put into
+	 */
 	public void setLastBag(Bag tempBag) {
 		this.myLastBag = tempBag;
 		
 	}
 
+	/**
+	 * Gets the last bag this item was put into
+	 * @return the bag this item was last put into
+	 */
 	public Bag getLastBag() {
 		return this.myLastBag;
 	}
