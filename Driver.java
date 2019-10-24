@@ -64,17 +64,7 @@ public class Driver {
 				localSearch();
 				printBags();
 			} else {
-				PriorityQueue<State> States = new PriorityQueue<State>(1000, new Comparator<State>() {
-
-					public int compare(State a, State b) {
-						if (a.getLevel() != b.getLevel()) {
-							return b.getLevel() - a.getLevel();
-						} else if (a.getTotalItemDomains() != b.getTotalItemDomains()) {
-							return b.getTotalItemDomains() - a.getTotalItemDomains();
-						}
-						return 0;
-					}
-				});
+				PriorityQueue<State> States = new PriorityQueue<State>();
 				States.add(new State(pQueueItems));
 				prioritySearch(States);
 				printSuccessStates();
@@ -93,7 +83,8 @@ public class Driver {
 	}
 
 	private static void printBags() {
-		System.out.println("success\nState Counter: " + stateCounter);
+		if (DEBUG) System.out.println("State Counter: " + stateCounter);
+		System.out.println("success");
 		for (Bag bag : Bags) {
 			for (Item item : bag.getItemsInBag()) {
 				System.out.print(item.getName() + " ");
@@ -173,7 +164,6 @@ public class Driver {
 					minValue = currValue;
 				}
 			}
-			if (DEBUG) System.out.println("Moving Item: " + currItemInBag.getName() + " to " + tempBag);
 			tempBag.addItem(currItemInBag);
 			boolean inRecentlyUsed = false;
 			boolean shuffleEverything = true;
@@ -207,14 +197,13 @@ public class Driver {
 					}
 					bag.recentUsedCount = 0;
 				}
-				System.out.println("################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################################");
 			}
 		}
 		
 	}
 
 	private static void printSuccessStates() {
-		if (DEBUG) System.out.println("Total states searched: " + stateCounter);
+		if (DEBUG) System.out.println("State Counter: " + stateCounter);
 		if (successStates.isEmpty()) {
 			System.out.println("failure");
 		} else {

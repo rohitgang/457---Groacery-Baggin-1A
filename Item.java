@@ -11,7 +11,7 @@ public class Item implements Comparable<Item>{
     private String name;
     private HashMap<String, Boolean> constraintsMap;
     private ArrayList<Bag> domain;
-    private int numZerosInConstraints;
+    public int numZerosInConstraints;
     private Bag myLastBag;
     /**
      * constructor for the item class.
