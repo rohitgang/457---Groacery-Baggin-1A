@@ -132,6 +132,59 @@ if the item is being added to the same bag as it is in right now (this is a huge
 The situations when it should award the item are when the bag has no problem if item is added to the bag (this is a huge plus point 
 and the item is awarded heavily) and if an item in bag is okay with the item being added.
 
+If the input is :
+"
+0
+0
+item0 3 + item1
+item 1 4 + item0"
+
+The output is as expected:
+"The number of bags or the bag size is 0.
+Failure."
+
+If the input is:
+"
+3
+4
+item0 3 - item0
+"
+The output is as expected:
+"This item cannot be with itself.
+Failure"
+
+If the input is :
+"
+3
+4
+item 0 3 - item0
+"
+The output is as expected:
+"Unknown exception occured."
+
+If the input is:
+"
+3
+4
+item0 0 
+item1 2 + item0
+"
+The output is as expected:
+"success
+item0 item1"
+
+If the input is:
+"
+3
+4
+item0 0 + item1
+item1 2 + 
+"
+The output is as expected:
+"success
+item1
+item0"
+
 OUTPUT: 
 
 If the program is ran with the -breadth option, the program would output all the possible states :
