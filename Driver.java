@@ -29,7 +29,7 @@ public class Driver {
 	private static int stateCounter = 0;
 	private static boolean checkArcConsistency = true;
 	private static boolean localSearch = false;
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 
 	/**
 	 * Main method that drives this project
@@ -74,7 +74,6 @@ public class Driver {
 			System.out.println("Your file is invalid, check the number format or the file location.");
 			System.exit(0);
 		} catch (Exception e) {
-			e.printStackTrace();
 			System.out.println("Unknown exception occured.");
 			System.exit(0);
 		}
@@ -259,6 +258,12 @@ public class Driver {
 	public static void initBagsAndItems(Scanner scan) throws InvalidFileFormatException {
 		int numBags = Integer.parseInt(scan.nextLine().trim());
 		int bagSize = Integer.parseInt(scan.nextLine().trim());
+		if(numBags == 0 || bagSize == 0)
+		{
+			System.out.println("The number of bags or the bag size is 0");
+			System.out.println("Failure");
+			System.exit(0);
+		}
 		itemNames = new ArrayList<String>();
 		itemSize = new ArrayList<Integer>();
 		while (scan.hasNextLine()) {
@@ -300,9 +305,18 @@ public class Driver {
 						mapp.put(item, contains(item, line));
 					}
 				} else if (line[2].equals("-")) {
+					String illegalItem = line[0];
 					line[0] = "";
 					for (String item : itemNames) {
 						mapp.put(item, !contains(item, line));
+					}
+					for (int j = 3; j < line.length; j++)
+					{
+						if(illegalItem.equals(line[j]))
+						{
+							System.out.println("This item cannot be with itself.\nFailure");
+							System.exit(0);
+						}
 					}
 				} else {
 					throw new InvalidFileFormatException(line[2] + " does not match + or -");
